@@ -418,9 +418,10 @@ body {
 #timelineWorkspace {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: auto;
+    min-height: 320px;
     padding: 10px;
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* Timeline toolbar */

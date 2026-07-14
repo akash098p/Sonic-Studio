@@ -8,6 +8,7 @@ class UIManager {
         this.effectsWorkspace = document.getElementById("effectsWorkspace");
         this.recordingWorkspace = document.getElementById("recordingWorkspace");
         this.projectWorkspace = document.getElementById("projectWorkspace");
+        this.appearanceWorkspace = document.getElementById("appearanceWorkspace");
         this.clipInspector = document.getElementById("clipInspector");
         this.fileProcessing = false;
         this.initEventListeners();
@@ -15,6 +16,9 @@ class UIManager {
 
     init() {
         console.log("UI Manager Ready - Premium Version");
+        if (!this.workspace || !this.timelineWorkspace || !this.effectsWorkspace || !this.recordingWorkspace || !this.projectWorkspace || !this.clipInspector || !this.appearanceWorkspace) {
+            throw new Error('UIManager failed to initialize: missing workspace sections');
+        }
         this.showWorkspace('workspace');
         this.setupPremiumFeatures();
     }
@@ -619,4 +623,4 @@ class UIManager {
     }
 }
 
-window.UIManager = new UIManager();
+// UIManager is instantiated by App in js/app.js

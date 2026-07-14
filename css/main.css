@@ -101,7 +101,9 @@ body {
 /* Workspace Container */
 #workspace {
     flex: 1;
-    display: none;
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr) 320px;
+    gap: 20px;
     overflow: hidden;
 }
 
@@ -109,8 +111,10 @@ body {
 #timelineWorkspace {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: auto;
+    min-height: 320px;
     background: var(--bg-dark);
+    overflow: visible;
 }
 
 /* Timeline Header */
@@ -551,19 +555,16 @@ body {
 }
 
 #workspace {
-    display: none;
-    flex-direction: column;
-    height: 100%;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr) 320px;
+    gap: 20px;
+    min-height: 0;
+    overflow: hidden;
 }
 
 #workspace.active {
-    display: block;
-}
-
-#workspace {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    display: grid;
 }
 
 /* Timeline Area */
@@ -1012,28 +1013,19 @@ body {
     transform: scale(1.05);
 }
 
-#stopBtn {
-    display: none;
-}
-
-#playBtn {
-    display: inline-block;
-}
-
-#pauseBtn {
-    display: none;
-}
-
-#stopBtn {
-    display: none;
-}
-
-#skipStartBtn {
-    display: none;
+#playBtn,
+#pauseBtn,
+#stopBtn,
+#skipStartBtn,
+#skipEndBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    visibility: visible;
+    opacity: 1;
 }
 
 #skipEndBtn {
-    display: none;
     background: var(--accent-blue);
     color: white;
 }

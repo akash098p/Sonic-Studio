@@ -13,6 +13,179 @@
 <link rel="stylesheet" href="css/themes.css">
 <link rel="stylesheet" href="css/responsive.css">
 <link rel="stylesheet" href="css/premium-theme.css">
+<style>
+  :root { font-size: 16px; }
+  html, body { min-height: 100%; }
+  body { overflow: auto; margin: 0; background: var(--bg-dark); color: var(--text-primary); }
+  #app { min-height: 100vh; display: flex; flex-direction: column; }
+  #mainContent { flex: 1; display: flex; flex-direction: column; min-height: 100vh; overflow: hidden; }
+  #topRibbon { position: sticky; top: 0; z-index: 20; width: 100%; background: var(--bg-header); border-bottom: 1px solid var(--border-color); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { display: flex; flex-direction: column; gap: 4px; }
+  .brand h1 { font-size: 1.6rem; margin: 0; }
+  .brand p { margin: 0; color: var(--text-secondary); font-size: 0.95rem; }
+  .mainMenu { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 0; }
+  .mainMenu button { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: var(--text-primary); border-radius: 12px; padding: 10px 18px; transition: transform 0.2s ease, background 0.2s ease; }
+  .mainMenu button:hover { transform: translateY(-1px); background: rgba(255,255,255,0.12); }
+  #workspace { display: grid !important; grid-template-columns: 320px minmax(0, 1fr) 320px; gap: 20px; padding: 20px; min-height: 560px; overflow: hidden; }
+  #leftSidebar, #rightSidebar { display: flex; flex-direction: column; gap: 20px; background: var(--bg-darker); border: 1px solid var(--border-color); border-radius: 20px; padding: 20px; overflow: auto; }
+  #editorArea { display: flex; flex-direction: column; gap: 20px; min-height: 0; background: var(--bg-darker); border: 1px solid var(--border-color); border-radius: 20px; padding: 20px; overflow: hidden; }
+  #editorArea > h2 { margin: 0; font-size: 1.35rem; color: var(--text-primary); border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px; }
+  #previewContainer { background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 18px; padding: 20px; min-height: 420px; display: grid; gap: 18px; overflow: hidden; }
+  #previewContainer video, #previewContainer audio, #previewContainer canvas { width: 100%; display: block; border-radius: 14px; background: #000; }
+  #timelineWorkspace { background: var(--bg-darker); border-top: 1px solid var(--border-color); padding: 18px 20px 24px; margin: 0 20px 20px; border-radius: 20px; }
+  #timelineToolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .toolbar-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  #timelineRuler { background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 18px; padding: 14px; display: flex; align-items: center; gap: 14px; overflow-x: auto; }
+  #tracksContainer { background: var(--bg-dark); border-radius: 18px; padding: 18px; display: grid; gap: 16px; max-height: 280px; overflow-y: auto; }
+  .track-row { display: grid; grid-template-columns: 180px 1fr; gap: 16px; align-items: start; }
+  .track-header { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 16px; }
+  .track-header h4 { margin: 0 0 12px 0; font-size: 1rem; }
+  .track-header button { width: 100%; margin-bottom: 8px; }
+  .track-content { min-height: 110px; border-radius: 18px; background: var(--bg-card); }
+  #playbackFooter { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 20px; margin: 0 20px 20px; background: var(--bg-header); border-top: 1px solid var(--border-color); border-radius: 0 0 20px 20px; }
+  .transportControls { display: flex; gap: 10px; flex-wrap: wrap; }
+  .transportControls button { border-radius: 14px; padding: 12px 16px; }
+  .timeDisplay, .masterVolume { display: flex; align-items: center; gap: 10px; color: var(--text-secondary); }
+  #statusBar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 12px 20px; margin: 0 20px 20px; background: var(--bg-header); border: 1px solid var(--border-color); border-radius: 0 0 20px 20px; }
+  #statusBar span { font-size: 0.95rem; }
+  #mediaDropZone { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 180px; padding: 28px; border: 2px dashed var(--accent-blue); border-radius: 20px; background: rgba(0,120,212,0.08); color: var(--text-primary); position: relative; cursor: pointer; transition: background 0.2s ease, border-color 0.2s ease; }
+  #mediaDropZone:hover, #mediaDropZone:focus-within { background: rgba(0,120,212,0.14); border-color: var(--primary-light); }
+  #mediaDropZone span { font-size: 1rem; font-weight: 700; line-height: 1.4; }
+  #mediaDropZone small { color: var(--text-secondary); }
+  #mediaInput { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+  button, input, select, textarea { font: inherit; outline: none; }
+  button { border: 1px solid transparent; background: rgba(255,255,255,0.08); color: var(--text-primary); transition: all 0.2s ease; }
+  button:hover { background: rgba(255,255,255,0.12); }
+  input, select { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-primary); padding: 10px 12px; }
+  h2, h4 { color: var(--text-primary); }
+</style>
+<style>
+  /* Strong layout overrides */
+  html, body, #app, #mainContent, #workspace, #timelineWorkspace, #editorArea, #playbackFooter, #statusBar {
+    min-height: 0 !important;
+  }
+  #app { display: flex !important; flex-direction: column !important; min-height: 100vh !important; }
+  #mainContent { display: flex !important; flex-direction: column !important; flex: 1 !important; min-height: 0 !important; overflow: visible !important; }
+  #topRibbon { position: sticky !important; top: 0 !important; z-index: 50 !important; }
+  #workspace { display: grid !important; grid-template-columns: minmax(180px, 320px) minmax(260px, 1fr) minmax(180px, 320px) !important; gap: 20px !important; padding: 20px !important; min-height: calc(100vh - 260px) !important; overflow: visible !important; min-width: 0 !important; }
+  #leftSidebar, #rightSidebar { min-width: 0 !important; max-width: 320px !important; width: auto !important; }
+  #editorArea { display: flex !important; flex-direction: column !important; gap: 20px !important; min-height: 0 !important; overflow: visible !important; min-width: 0 !important; width: auto !important; }
+  #previewContainer { min-width: 0 !important; width: 100% !important; max-width: 100% !important; }
+  @media screen and (max-width: 1100px) {
+    #workspace { grid-template-columns: 200px minmax(0, 1fr) 200px !important; }
+    #leftSidebar, #rightSidebar { max-width: 220px !important; }
+  }
+  #timelineWorkspace { display: flex !important; flex-direction: column !important; margin: 0 20px 20px !important; padding: 18px 20px 24px !important; background: var(--bg-darker) !important; border-radius: 20px !important; overflow: visible !important; min-height: 320px !important; height: auto !important; position: relative !important; z-index: 5 !important; }
+  #timelineToolbar { display: flex !important; visibility: visible !important; opacity: 1 !important; overflow: visible !important; }
+  .toolbar-group { display: flex !important; visibility: visible !important; opacity: 1 !important; }
+  .track-row { display: grid !important; grid-template-columns: 180px minmax(0, 1fr) !important; gap: 16px !important; align-items: start !important; visibility: visible !important; opacity: 1 !important; }
+  #tracksContainer { display: grid !important; grid-template-columns: 1fr !important; gap: 16px !important; visibility: visible !important; opacity: 1 !important; overflow: visible !important; height: auto !important; max-height: none !important; }
+  #playBtn, #pauseBtn, #stopBtn, #skipStartBtn, #skipEndBtn, #zoomOutBtn, #zoomInBtn, #splitBtn, #cutBtn, #copyBtn, #pasteBtn, #duplicateBtn, #deleteBtn, #undoBtn, #redoBtn, #markerBtn, #snapToggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  #playBtn { display: inline-flex !important; }
+  #pauseBtn { display: inline-flex !important; }
+  #stopBtn { display: inline-flex !important; }
+  #skipStartBtn { display: inline-flex !important; }
+  #skipEndBtn { display: inline-flex !important; }
+  #playbackFooter { position: relative !important; z-index: 10 !important; }
+  #statusBar { position: relative !important; z-index: 10 !important; }
+  #effectsWorkspace,
+  #recordingWorkspace,
+  #projectWorkspace,
+  #appearanceWorkspace,
+  #clipInspector,
+  #exportDialog,
+  #shortcutDialog,
+  #notificationContainer {
+    display: none !important;
+  }
+  #mainContent,
+  #workspace,
+  #editorArea,
+  #timelineWorkspace,
+  #timelineToolbar,
+  #tracksContainer,
+  .toolbar-group,
+  .track-row,
+  .track-header,
+  .track-content,
+  #playbackFooter,
+  #statusBar {
+    min-height: 0 !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  #timelineWorkspace {
+    display: flex !important;
+    flex-direction: column !important;
+    margin: 0 20px 20px !important;
+    padding: 18px 20px 24px !important;
+    background: var(--bg-darker) !important;
+    border-radius: 20px !important;
+    overflow: visible !important;
+    min-height: 320px !important;
+    height: auto !important;
+    max-height: none !important;
+    position: relative !important;
+    z-index: 5 !important;
+  }
+  #timelineToolbar {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+  #tracksContainer {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+  #playbackFooter,
+  #statusBar {
+    position: relative !important;
+    z-index: 50 !important;
+  }
+  #playBtn,
+  #pauseBtn,
+  #stopBtn,
+  #skipStartBtn,
+  #skipEndBtn,
+  #zoomOutBtn,
+  #zoomInBtn,
+  #splitBtn,
+  #cutBtn,
+  #copyBtn,
+  #pasteBtn,
+  #duplicateBtn,
+  #deleteBtn,
+  #undoBtn,
+  #redoBtn,
+  #markerBtn,
+  #snapToggle,
+  .toolbar-group button,
+  .transportControls button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+</style>
 </head>
 
 <body>
@@ -24,7 +197,7 @@
 </div>
 
 <div id="app">
-
+<div id="mainContent">
 <header id="topRibbon">
 
 <div class="brand">
@@ -43,29 +216,30 @@
 
 </header>
 
-<section id="workspace">
+<main id="workspace" role="main">
 
-<aside id="leftSidebar">
+<aside id="leftSidebar" aria-labelledby="mediaLibraryHeading">
 
-<h2>Media Library</h2>
+<h2 id="mediaLibraryHeading">Media Library</h2>
 
-<div id="mediaDropZone">
-<p>Drag & Drop Files</p>
-<input type="file" multiple id="mediaInput">
-</div>
+<label id="mediaDropZone" class="drop-zone" for="mediaInput" tabindex="0" aria-describedby="mediaDropHint">
+  <span>Drag & drop audio or video files here</span>
+  <small id="mediaDropHint">Or click to browse your computer</small>
+  <input type="file" multiple id="mediaInput" accept="audio/*,video/*" aria-label="Select audio or video files to import">
+</label>
 
-<div id="recentFiles"></div>
+<div id="recentFiles" aria-live="polite"></div>
 
 <h2>Recording</h2>
 
-<button id="recordMic">Microphone</button>
-<button id="recordSystem">System Audio</button>
-<button id="recordScreen">Screen</button>
+<button type="button" id="recordMic">Microphone</button>
+<button type="button" id="recordSystem">System Audio</button>
+<button type="button" id="recordScreen">Screen</button>
 
 </aside>
 
-<section id="editorArea">
-
+<section id="editorArea" aria-label="Editor workspace">
+<h2>Main Editing Area</h2>
 <div id="previewContainer">
 
 <video id="videoPreview" controls></video>
@@ -96,7 +270,7 @@
 
 </aside>
 
-</section>
+</main>
 
 <section id="timelineWorkspace">
 
@@ -209,12 +383,13 @@
 
 </footer>
 
-<div id="statusBar">
+<div id="statusBar" role="status" aria-live="polite">
 
 <span id="projectStatus">Project Ready</span>
 <span id="cpuUsage">CPU: 0%</span>
 <span id="memoryUsage">Memory: --</span>
 
+</div>
 </div>
 
 <div id="exportDialog" class="modal hidden">
@@ -453,6 +628,7 @@
 <div class="timeline-marker"></div>
 </template>
 
+</div>
 </div>
 
 <script src="js/notifications.js"></script>

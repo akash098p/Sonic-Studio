@@ -120,7 +120,9 @@ body {
 /* Workspace Container */
 #workspace {
     flex: 1;
-    display: none;
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr) 320px;
+    gap: 20px;
     overflow: hidden;
 }
 
@@ -130,6 +132,7 @@ body {
     flex-direction: column;
     height: 100%;
     background: var(--bg-dark);
+    overflow: visible;
 }
 
 /* Timeline Header */

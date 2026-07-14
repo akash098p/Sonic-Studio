@@ -38,6 +38,12 @@ class EditorManager {
         });
     }
 
+    updateTimeline() {
+        if (window.TimelineManager?.updateTimelineWidth) {
+            window.TimelineManager.updateTimelineWidth();
+        }
+    }
+
     addToHistory(action) {
         this.history.push(action);
         if (this.history.length > this.maxHistory) {
