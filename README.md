@@ -1,83 +1,120 @@
-# SonicStudio - Professional Browser-Based Audio & Video Editor
+# SonicStudio - Professional Audio & Video Editor (Web Edition)
 
-SonicStudio is a powerful, browser-based audio and video editing application that brings professional-grade editing capabilities to the web platform. Built with modern web technologies, it offers a comprehensive suite of tools for creators who want to edit audio and video without leaving their browser.
+A browser-based professional-grade media editing suite built entirely with vanilla JavaScript. SonicStudio runs entirely in the client without server dependencies, providing powerful audio and video editing capabilities accessible anytime, anywhere.
 
-## Features
+## Key Features
 
-### Video Editing
-- Trim, cut, and splice video clips
-- Rotate, resize, and transform video elements
-- Apply visual effects including transitions and filters
-- Multi-track timeline with precise control
-- Merge multiple video files into a single project
+### Media Editing Suite
+- **Video Editing**: Trim, cut, splice, rotate, resize, transformations
+- **Audio Editing**: Multi-track mixing, advanced effects (Bass Boost, Treble, Equalizer, Reverb, Echo, Noise Reduction), normalization
+- **Effects Library**: Visual filters, transitions, audio enhancements
+- **Multi-track Timeline**: Independent audio/video tracks with precise control
+- **Export Options**: Save projects as MP4, MP3, WAV, AAC, OGG, FLAC with adjustable bitrate & quality
 
-### Audio Editing
-- Multi-track audio mixing with volume, pan, and mute controls
-- Advanced audio effects: Bass Boost, Treble, Equalizer, Reverb, Echo, Noise Reduction
-- Audio normalization and fade in/out capabilities
-- Pitch shifting and playback speed control
+### Production Features
+- **Project Autosave**: Automatic project serialization with version tracking
+- **Media Library**: Import files via drag-and-drop, recent files access
+- **Performance Monitoring**: CPU/Memory usage visualization
+- **Themes**: Dark/light/midnight/neon themes with customization
+- **Keyboard Shortcuts**: Efficient workflow navigation
+- **Cross-Device Responsive**: Seamless experience on desktop & tablet
 
-### Production Tools
-- Professional export options (MP4, MP3, WAV, AAC, OGG, FLAC)
-- High-quality compression and bitrate controls
-- Project autosave and version management
-- Keyboard shortcuts for efficient workflow
-- Project management with recent files access
+## System Requirements
 
-### User Interface
-- Multiple workspace views (Editor, Effects, Recording, Project Management)
-- Customizable themes (Dark, Light, Midnight, Neon)
-- Responsive design that works on desktop and tablet
-- Real-time performance monitoring (CPU/Memory usage)
-- Intuitive drag-and-drop media library
+- Modern web browser (Chrome, Firefox, Edge, Safari)
+- Internet connection only for first load
+- No server or installation required
 
 ## Getting Started
 
-### Prerequisites
-- Modern web browser (Chrome, Firefox, Edge, Safari)
-- Internet connection for first-time setup
+### Quick Start
+1. **Open Application**  
+   Simply open `index.html` in your browser - no installation needed
 
-### Installation
-1. Clone this repository
-2. Open `index.html` in your browser
-3. Start editing immediately - no installation required
+2. **Create New Project**  
+   Click "New Project" → Choose between Audio or Video workspace
 
-### Usage Guide
-1. **New Project**: Click "New Project" in the main menu
-2. **Import Media**: Drag and drop files into the Media Library or use "Open" button
-3. **Edit Timeline**: Drag clips onto the timeline, trim, cut, and arrange
-4. **Apply Effects**: Select clips and adjust properties in the Inspector
-5. **Export**: Use the Export dialog to save your project in desired format
+3. **Import Media**  
+   - Drag & drop files to the Media Library  
+   - Click "Open" to browse files  
+   - Files appear instantly in the library
 
-## Advanced Features
-- **Multi-track Editing**: Work with multiple audio and video tracks simultaneously
-- **Live Preview**: Real-time playback and visualization of effects
-- **Audio Mixing**: Fine-tune individual track volume, pan, and effects
-- **Video Transformations**: Rotate, resize, and position video elements precisely
-- **Autosave**: Automatic project saving with configurable intervals
+4. **Edit Your Media**  
+   - Drag clips onto timeline tracks  
+   - Trim, cut, and arrange clips  
+   - Apply effects via the Inspector panel  
+   - Adjust volume, opacity, and transformations
 
-## Development
+5. **Export Your Work**  
+   - Choose MP4 for video projects  
+   - Choose MP3/WAV for audio projects  
+   - Adjust export settings and save
 
-### Project Structure
+### Advanced Usage
+- **Multi-track Editing**: Work with separate audio tracks for voiceovers, music, and sound effects
+- **Live Preview**: Real-time playback with visual effects
+- **Project Management**: Save multiple projects, load recent files, export completed projects
+- **Theme Customization**: Switch themes in Settings → Appearance
+- **Keyboard Shortcuts**: Use `Space` to play/pause, `Ctrl+Z` for undo
+
+## Project Structure
+
 ```
 SonicStudio/
-├── css/                # Stylesheets
-├── js/                 # JavaScript modules
-├── templates/          # HTML templates
-└── index.html          # Main entry point
+├── css/                # Styling files
+├── js/                 # Core JavaScript modules
+│   ├── ui.js           # UI manager with workspace switching
+│   ├── player.js       # Audio/video player with playback controls
+│   ├── timeline.js     # Multi-track timeline management
+│   ├── storage.js      # Browser localStorage persistence
+│   ├── notifications.js# System notifications & alerts
+│   └── loading.js      # Startup sequence manager
+├── index.html          # Main application entry point
+└── README.md           # Documentation
 ```
 
-### Building
-This is a client-side application - simply open `index.html` to use.
+## Technical Implementation
 
-### Customization
-- Modify `css/themes.css` for visual customization
-- Extend JavaScript modules in `/js/` for additional features
-- Add plugins via the Plugin Manager
+### Core Components
+- **UIManager**: Controls workspace visibility, handles user interactions
+- **PlayerManager**: Handles media playback, volume control, seek functionality
+- **TimelineManager**: Manages multi-track operations, clip positioning, destination assignment
+- **StorageManager**: Persists project data using `localStorage`
+- **App**: Orchestrates initialization, main loop, theme loading, and export flow
 
-## Support & Contribution
+### Media Import Flow
+1. User selects/draifts files into Media Library
+2. `FileReader` converts binary to Data URLs
+3. Clips are stored as objects with metadata
+4. Added to visual media library UI
+5. Dragging to timeline creates editable clips
 
-For support, bug reports, and contributions, please visit the project's issue tracker on the GitHub repository.
+### Playback Behavior
+- Supports automatic source identification (video vs audio)
+- Adjustable playback rate with just-in-time loading
+- Timeline playhead synchronization with media timeline
+- End-of-playback handling triggers timeline reset
+
+## Contributing
+
+### Development Flow
+- Fork repository and create feature branch
+- Implement changes in modular JavaScript files
+- Test functionality through browser interface
+- Maintain backward compatibility
+- Submit pull request with detailed description
+
+### Code Style
+- Strict mode JavaScript (`'use strict'`)
+- Class-based architecture with clear separation of concerns
+- Semantic naming conventions
+- Comprehensive inline documentation
+- Minimal DOM manipulations
 
 ## License
-SonicStudio is released under the MIT License.
+
+SonicStudio is released under the MIT License - see `LICENSE` file for details.
+
+## Acknowledgments
+
+Special thanks to the vibrant web development community and all contributors who helped shape SonicStudio into a professional-grade editor that runs entirely in the browser.
