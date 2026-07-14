@@ -1,71 +1,56 @@
 "use strict";
 
+// PlayerManager handles video/audio playback, time display, and basic controls for the editor.
 class PlayerManager {
     constructor() {
-        this.videoElement = document.getElementById("videoPreview");
-        this.audioElement = document.getElementById("audioPreview");
+        // Elements from the DOM
+        this.videoElement = document.getElementById('videoPreview');
+        this.audioElement = document.getElementById('audioPreview');
         this.currentElement = null;
         this.isPlaying = false;
         this.playbackRate = 1.0;
-        
         this.initElements();
     }
 
     initElements() {
+        // Ensure video element is visible and styled
         if (this.videoElement) {
-            this.videoElement.addEventListener("loadedmetadata", () => this.updateDuration());
-            this.videoElement.addEventListener("timeupdate", () => this.updateTimeDisplay());
-            this.videoElement.addEventListener("ended", () => this.onEnded());
-        }
-        
-        if (this.audioElement) {
-            this.audioElement.addEventListener("loadedmetadata", () => this.updateDuration());
-            this.audioElement.addEventListener("timeupdate", () => this.updateTimeDisplay());
-            this.audioElement.addEventListener("ended", () => this.onEnded());
-        }
-    }
-
-    play() {
-        if (this.currentElement) {
-            this.currentElement.playbackRate = this.playbackRate;
-            this.currentElement.play().then(() => {
-                this.isPlaying = true;
-                window.App.notify("Playing");
-            }).catch(err => {
-                console.error("Play failed:", err);
-                window.App.notify("Play failed: " + err.message);
+            this.videoElement.style.display = 'block';
+            this.videoElement.style.objectFit = 'contain';
+            this.videoElement.controls = true;
+            this.videoElement.addEventListener('loadedmetadata', () => {
+                this.updateTimeDisplay();
+                this.onVideoReady();
             });
-        } else {
-            // Try to play the first available clip on timeline
-            const firstClip = window.TimelineManager?.getFirstClip?.();
-            if (firstClip) {
-                this.loadClip(firstClip);
-                this.play();
-            }
+            this.videoElement.addEventListener('timeupdate', () => this.updateTimeDisplay());
+            this.videoElement.addEventListener('ended', () => this.onEnded());
+        }
+        // Prepare audio element (hidden by default)
+        if (this.audioElement) {
+            this.audioElement.style.display = 'none';
+            this.audioElement.controls = true;
+            this.audioElement.crossOrigin = 'anonymous';
+            this.audioElement.addEventListener('loadedmetadata', () => {
+                this.updateTimeDisplay();
+                this.onAudioReady();
+            });
+            this.audioElement.addEventListener('timeupdate', () => this.updateTimeDisplay());
+            this.audioElement.addEventListener('ended', () => this.onEnded());
         }
     }
 
-    pause() {
-        if (this.currentElement) {
-            this.currentElement.pause();
-            this.isPlaying = false;
-            window.App.notify("Paused");
+    // Load the first clip from the timeline (if any)
+    loadCurrentElement() {
+        const firstClip = window.TimelineManager && window.TimelineManager.getFirstClip
+            ? window.TimelineManager.getFirstClip()
+            : null;
+        if (firstClip && firstClip.src) {
+            this.loadClip(firstClip);
         }
     }
 
-    stop() {
-        if (this.currentElement) {
-            this.currentElement.pause();
-            this.currentElement.currentTime = 0;
-            this.isPlaying = false;
-            this.updateTimeDisplay();
-            window.App.notify("Stopped");
-        }
-    }
-
+    // Set the element source based on clip type
     loadClip(clip) {
-        if (!clip || !clip.src) return;
-        
         if (clip.type === 'video') {
             this.currentElement = this.videoElement;
             this.videoElement.src = clip.src;
@@ -77,9 +62,46 @@ class PlayerManager {
             this.audioElement.style.display = 'block';
             this.videoElement.style.display = 'none';
         }
-        
         this.currentElement.load();
-        window.App.notify(`Loaded: ${clip.name}`);
+        if (window.App) window.App.notify('Loaded ' + clip.name);
+    }
+
+    play() {
+        if (this.currentElement) {
+            this.currentElement.playbackRate = this.playbackRate;
+            this.currentElement.play().then(() => {
+                this.isPlaying = true;
+                if (window.App) window.App.notify('Playing');
+            }).catch(err => {
+                console.error('Play failed:', err);
+                if (window.App) window.App.notify('Play failed: ' + err.message);
+            });
+        } else {
+            this.loadCurrentElement();
+        }
+    }
+
+    pause() {
+        if (this.currentElement) {
+            this.currentElement.pause();
+            this.isPlaying = false;
+            if (window.App) window.App.notify('Paused');
+        }
+    }
+
+    stop() {
+        if (this.currentElement) {
+            this.currentElement.pause();
+            this.currentElement.currentTime = 0;
+            this.isPlaying = false;
+            this.updateTimeDisplay();
+        }
+    }
+
+    setVolume(volume) {
+        if (this.currentElement) {
+            this.currentElement.volume = volume / 100;
+        }
     }
 
     setPlaybackRate(rate) {
@@ -104,49 +126,48 @@ class PlayerManager {
         return this.currentElement ? this.currentElement.duration : 0;
     }
 
-    updateTimeDisplay() {
-        const current = document.getElementById("currentTime");
-        const total = document.getElementById("totalTime");
-        const time = this.getCurrentTime();
-        const duration = this.getDuration();
-        
-        if (current) current.textContent = this.formatTime(time);
-        if (total) total.textContent = this.formatTime(duration);
-        
-        // Update playhead position on timeline
-        if (duration > 0) {
-            const progress = (time / duration) * 100;
-            window.TimelineManager?.updatePlayhead?.(progress);
-        }
+    isElementReady() {
+        return this.currentElement && this.currentElement.readyState >= 2 && this.currentElement.duration > 0;
     }
 
-    updateDuration() {
+    onVideoReady() {
+        this.isPlaying = false;
         this.updateTimeDisplay();
+        if (window.App) window.App.notify('Video loaded');
+    }
+
+    onAudioReady() {
+        this.updateTimeDisplay();
+        if (window.App) window.App.notify('Audio loaded');
     }
 
     onEnded() {
         this.isPlaying = false;
-        window.App.notify("Playback ended");
-        window.TimelineManager?.onPlaybackEnded?.();
+        this.updateTimeDisplay();
+        if (window.App) window.App.notify('Playback ended');
     }
 
-    formatTime(seconds) {
-        if (isNaN(seconds)) return "00:00:00";
-        const h = Math.floor(seconds / 3600);
-        const m = Math.floor((seconds % 3600) / 60);
-        const s = Math.floor(seconds % 60);
-        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    }
-
-    setVolume(volume) {
-        if (this.currentElement) {
-            this.currentElement.volume = volume / 100;
+    // Update the UI time elements
+    updateTimeDisplay() {
+        const currentEl = document.getElementById('currentTime');
+        const totalEl = document.getElementById('totalTime');
+        if (currentEl) currentEl.textContent = this.formatTime(this.getCurrentTime());
+        if (totalEl) totalEl.textContent = this.formatTime(this.getDuration());
+        const playhead = document.getElementById('playhead');
+        if (playhead && this.getDuration() > 0) {
+            playhead.style.left = (this.getCurrentTime() / this.getDuration()) * 100 + '%';
         }
     }
 
-    isLoaded() {
-        return this.currentElement && this.currentElement.readyState >= 2;
+    // Helper to format seconds as HH:MM:SS
+    formatTime(seconds) {
+        if (isNaN(seconds)) return '00:00:00';
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = Math.floor(seconds % 60);
+        return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
     }
 }
 
+// Expose the singleton instance
 window.PlayerManager = new PlayerManager();

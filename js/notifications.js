@@ -3,25 +3,41 @@
 class NotificationManager {
     constructor() {
         this.container = document.getElementById("notificationContainer");
+        this.notifications = [];
     }
 
     show(message, type = "info", duration = 3000) {
         if (!this.container) return;
-        
+
         const notification = document.createElement("div");
         notification.className = `notification ${type}`;
-        notification.textContent = message;
-        
+        notification.innerHTML = `<span>${message}</span><button class="close-notification">&times;</button>`;
+
         this.container.appendChild(notification);
-        
-        // Animate in
+        this.notifications.push(notification);
+
+        // Show animation
         setTimeout(() => notification.classList.add("show"), 10);
-        
-        // Remove after duration
+
+        // Close button
+        const closeBtn = notification.querySelector(".close-notification");
+        closeBtn.addEventListener("click", () => this.remove(notification));
+
+        // Auto remove
         setTimeout(() => {
-            notification.classList.remove("show");
-            setTimeout(() => notification.remove(), 300);
+            this.remove(notification);
         }, duration);
+    }
+
+    remove(notification) {
+        if (notification && notification.parentNode) {
+            notification.classList.remove("show");
+            notification.addEventListener("transitionend", () => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, { once: true });
+        }
     }
 
     info(message, duration) {
@@ -32,20 +48,16 @@ class NotificationManager {
         this.show(message, "success", duration);
     }
 
-    error(message, duration) {
-        this.show(message, "error", duration);
-    }
-
     warning(message, duration) {
         this.show(message, "warning", duration);
     }
+
+    error(message, duration) {
+        this.show(message, "error", duration);
+    }
 }
 
-window.NotificationManager = new NotificationManager();
-
-// Add notify method to App for backward compatibility
-if (window.App) {
-    window.App.notify = (message) => {
-        window.NotificationManager?.info(message);
-    };
-}
+// Create instance and attach to all possible global names
+const notificationManager = new NotificationManager();
+window.NotificationManager = notificationManager;
+window.notificationManager = notificationManager;
