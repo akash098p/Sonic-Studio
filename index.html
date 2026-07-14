@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SonicStudio</title>
+
+
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/editor.css">
+<link rel="stylesheet" href="css/timeline.css">
+<link rel="stylesheet" href="css/waveform.css">
+<link rel="stylesheet" href="css/effects.css">
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+
+<div id="loadingScreen">
+  <div class="logo">SonicStudio</div>
+  <div class="loader"></div>
+  <p>Loading Professional Studio...</p>
+</div>
+
+<div id="app">
+
+<header id="topRibbon">
+
+<div class="brand">
+<h1>SonicStudio</h1>
+<p>Professional Browser Audio & Video Editor</p>
+</div>
+
+<nav class="mainMenu">
+<button id="newProject">New Project</button>
+<button id="openProject">Open</button>
+<button id="saveProject">Save</button>
+<button id="saveAs">Save As</button>
+<button id="exportProject">Export</button>
+<button id="settings">Settings</button>
+</nav>
+
+</header>
+
+<section id="workspace">
+
+<aside id="leftSidebar">
+
+<h2>Media Library</h2>
+
+<div id="mediaDropZone">
+<p>Drag & Drop Files</p>
+<input type="file" multiple id="mediaInput">
+</div>
+
+<div id="recentFiles"></div>
+
+<h2>Recording</h2>
+
+<button id="recordMic">Microphone</button>
+<button id="recordSystem">System Audio</button>
+<button id="recordScreen">Screen</button>
+
+</aside>
+
+<section id="editorArea">
+
+<div id="previewContainer">
+
+<video id="videoPreview" controls></video>
+
+<audio id="audioPreview" controls></audio>
+
+<canvas id="waveformCanvas"></canvas>
+
+<canvas id="spectrumCanvas"></canvas>
+
+<canvas id="oscilloscopeCanvas"></canvas>
+
+</div>
+
+</section>
+
+<aside id="rightSidebar">
+
+<h2>Inspector</h2>
+
+<div id="propertiesPanel"></div>
+
+<div id="effectsPanel"></div>
+
+<div id="equalizerPanel"></div>
+
+<div id="mixerPanel"></div>
+
+</aside>
+
+</section>
+
+<section id="timelineWorkspace">
+
+<div id="timelineToolbar">
+
+<div class="toolbar-group">
+<button id="zoomOutBtn">-</button>
+<input type="range" id="timelineZoom" min="1" max="500" value="100">
+<button id="zoomInBtn">+</button>
+</div>
+
+<div class="toolbar-group">
+<button id="splitBtn">Split</button>
+<button id="cutBtn">Cut</button>
+<button id="copyBtn">Copy</button>
+<button id="pasteBtn">Paste</button>
+<button id="duplicateBtn">Duplicate</button>
+<button id="deleteBtn">Delete</button>
+<button id="undoBtn">Undo</button>
+<button id="redoBtn">Redo</button>
+</div>
+
+<div class="toolbar-group">
+<label><input type="checkbox" id="snapToggle" checked> Snap</label>
+<button id="markerBtn">Add Marker</button>
+</div>
+
+</div>
+
+<div id="timelineRuler">
+
+<div id="frameNumbers"></div>
+
+<div id="playhead">
+<div class="playhead-line"></div>
+<div class="playhead-handle"></div>
+</div>
+
+</div>
+
+<div id="tracksContainer">
+
+<div class="track-row">
+
+<div class="track-header">
+<h4>Video Track 1</h4>
+<button>Mute</button>
+<button>Lock</button>
+<button>Hide</button>
+</div>
+
+<div class="track-content" id="videoTrack1"></div>
+
+</div>
+
+<div class="track-row">
+
+<div class="track-header">
+<h4>Audio Track 1</h4>
+<button>Mute</button>
+<button>Solo</button>
+<button>Lock</button>
+</div>
+
+<div class="track-content" id="audioTrack1"></div>
+
+</div>
+
+<div class="track-row">
+
+<div class="track-header">
+<h4>Audio Track 2</h4>
+<button>Mute</button>
+<button>Solo</button>
+<button>Lock</button>
+</div>
+
+<div class="track-content" id="audioTrack2"></div>
+
+</div>
+
+</div>
+
+</section>
+
+<footer id="playbackFooter">
+
+<div class="transportControls">
+
+<button id="skipStartBtn">|◀</button>
+<button id="rewindBtn">⏪</button>
+<button id="playBtn">▶</button>
+<button id="pauseBtn">⏸</button>
+<button id="stopBtn">■</button>
+<button id="forwardBtn">⏩</button>
+<button id="skipEndBtn">▶|</button>
+
+</div>
+
+<div class="timeDisplay">
+<span id="currentTime">00:00:00</span>
+ /
+<span id="totalTime">00:00:00</span>
+</div>
+
+<div class="masterVolume">
+<label>Master</label>
+<input type="range" id="masterVolume" min="0" max="100" value="100">
+</div>
+
+</footer>
+
+<div id="statusBar">
+
+<span id="projectStatus">Project Ready</span>
+<span id="cpuUsage">CPU: 0%</span>
+<span id="memoryUsage">Memory: --</span>
+
+</div>
+
+<div id="exportDialog" class="modal hidden">
+
+<div class="modal-content">
+
+<h2>Export Project</h2>
+
+<label>Format</label>
+<select id="exportFormat">
+<option>MP4</option>
+<option>MP3</option>
+<option>WAV</option>
+<option>AAC</option>
+<option>OGG</option>
+<option>FLAC</option>
+<option>M4A</option>
+</select>
+
+<label>Quality</label>
+<select id="exportQuality">
+<option>Low</option>
+<option selected>High</option>
+<option>Ultra</option>
+</select>
+
+<progress id="exportProgress" value="0" max="100"></progress>
+
+<div class="dialogButtons">
+<button id="startExportBtn">Start Export</button>
+<button id="cancelExportBtn">Cancel</button>
+</div>
+
+</div>
+
+</div>
+
+<section id="effectsWorkspace">
+
+<div class="panel audio-effects">
+
+<h2>Audio Effects</h2>
+
+<div class="effect-card"><label>Bass Boost</label><input type="range" id="bassBoost" min="-20" max="20" value="0"></div>
+<div class="effect-card"><label>Treble</label><input type="range" id="trebleBoost" min="-20" max="20" value="0"></div>
+<div class="effect-card"><label>10-Band Equalizer</label><div id="equalizerBands"></div></div>
+<div class="effect-card"><label>Echo</label><input type="range" id="echoAmount" min="0" max="100"></div>
+<div class="effect-card"><label>Reverb</label><input type="range" id="reverbAmount" min="0" max="100"></div>
+<div class="effect-card"><label>Noise Reduction</label><input type="range" id="noiseReduction" min="0" max="100"></div>
+<div class="effect-card"><label>Normalize Volume</label><button id="normalizeBtn">Normalize</button></div>
+<div class="effect-card"><label>Fade In</label><input type="number" id="fadeInSeconds" value="2"></div>
+<div class="effect-card"><label>Fade Out</label><input type="number" id="fadeOutSeconds" value="2"></div>
+<div class="effect-card"><label>Playback Speed</label><input type="range" id="speedControl" min="0.25" max="3" step="0.05" value="1"></div>
+<div class="effect-card"><label>Pitch Shift</label><input type="range" id="pitchShift" min="-12" max="12" value="0"></div>
+
+</div>
+
+<div class="panel video-effects">
+
+<h2>Video Editing</h2>
+
+<button id="trimVideoBtn">Trim Video</button>
+<button id="cropVideoBtn">Crop</button>
+<button id="rotateVideoBtn">Rotate</button>
+<button id="resizeVideoBtn">Resize</button>
+<button id="mergeVideoBtn">Merge Videos</button>
+<button id="compressVideoBtn">Compress</button>
+<button id="convertVideoBtn">Convert Format</button>
+<button id="removeAudioBtn">Remove Audio</button>
+<button id="replaceAudioBtn">Replace Audio</button>
+
+</div>
+
+<div class="panel visualizers">
+
+<h2>Live Visualization</h2>
+
+<canvas id="frequencySpectrumCanvas"></canvas>
+<canvas id="eqBarsCanvas"></canvas>
+<canvas id="peakMeterCanvas"></canvas>
+<canvas id="rmsMeterCanvas"></canvas>
+
+</div>
+
+</section>
+
+<section id="recordingWorkspace">
+
+<h2>Recording Studio</h2>
+
+<button id="recordMicrophone">Record Microphone</button>
+<button id="recordSystemAudio">Record System Audio</button>
+<button id="recordCamera">Record Webcam</button>
+<button id="recordScreenAudio">Record Screen + Audio</button>
+
+<div id="recordingStatus"></div>
+
+</section>
+
+<section id="projectWorkspace">
+
+<h2>Project Management</h2>
+
+<button id="saveProjectFile">Save Project</button>
+<button id="loadProjectFile">Open Project</button>
+<button id="autosaveToggle">Autosave</button>
+
+<div id="recentProjectsList"></div>
+
+</section>
+
+<section id="appearanceWorkspace">
+
+<h2>Appearance</h2>
+
+<select id="themeSelector">
+<option>Dark</option>
+<option>Light</option>
+<option>Midnight</option>
+<option>Neon</option>
+</select>
+
+</section>
+
+<div id="shortcutDialog" class="modal hidden">
+<div class="modal-content">
+<h2>Keyboard Shortcuts</h2>
+<ul>
+<li>Space - Play/Pause</li>
+<li>Ctrl+S - Save</li>
+<li>Ctrl+Z - Undo</li>
+<li>Ctrl+Y - Redo</li>
+<li>Ctrl+C - Copy Clip</li>
+<li>Ctrl+V - Paste Clip</li>
+<li>Delete - Remove Clip</li>
+</ul>
+<button class="closeShortcutDialog">Close</button>
+</div>
+</div>
+
+<div id="notificationContainer"></div>
+
+
+
+<section id="clipInspector">
+
+<div class="inspector-card">
+<h2>Clip Properties</h2>
+
+<label>Name</label>
+<input type="text" id="clipName">
+
+<label>Start Time</label>
+<input type="number" id="clipStart">
+
+<label>End Time</label>
+<input type="number" id="clipEnd">
+
+<label>Opacity</label>
+<input type="range" id="clipOpacity" min="0" max="100" value="100">
+
+<label>Rotation</label>
+<input type="range" id="clipRotation" min="-180" max="180" value="0">
+
+<label>Scale</label>
+<input type="range" id="clipScale" min="10" max="300" value="100">
+
+<label>Playback Speed</label>
+<input type="range" id="clipSpeed" min="0.25" max="4" step="0.05" value="1">
+</div>
+
+<div class="inspector-card">
+<h2>Audio Mixer</h2>
+
+<label>Volume</label>
+<input type="range" id="trackVolume" min="0" max="100" value="100">
+
+<label>Pan</label>
+<input type="range" id="trackPan" min="-100" max="100" value="0">
+
+<label>Mute</label>
+<input type="checkbox" id="trackMute">
+
+<label>Solo</label>
+<input type="checkbox" id="trackSolo">
+</div>
+
+</section>
+
+<div id="pluginManager" class="modal hidden">
+<div class="modal-content">
+<h2>Plugin Manager</h2>
+<ul id="pluginList">
+<li>Equalizer</li>
+<li>Compressor</li>
+<li>Limiter</li>
+<li>Noise Gate</li>
+<li>Pitch Shifter</li>
+<li>Reverb</li>
+<li>Echo</li>
+</ul>
+<button id="closePluginManager">Close</button>
+</div>
+</div>
+
+<div id="aboutDialog" class="modal hidden">
+<div class="modal-content">
+<h2>About SonicStudio</h2>
+<p>Professional browser-based audio and video editor.</p>
+<p>Version 1.0.0</p>
+<button id="closeAboutDialog">Close</button>
+</div>
+</div>
+
+<div id="confirmDialog" class="modal hidden">
+<div class="modal-content">
+<h2>Confirmation</h2>
+<p id="confirmMessage">Are you sure?</p>
+<button id="confirmYes">Yes</button>
+<button id="confirmNo">No</button>
+</div>
+</div>
+
+<template id="videoClipTemplate">
+<div class="timeline-clip video-clip">
+<div class="clip-title">Video Clip</div>
+</div>
+</template>
+
+<template id="audioClipTemplate">
+<div class="timeline-clip audio-clip">
+<div class="clip-title">Audio Clip</div>
+</div>
+</template>
+
+<template id="markerTemplate">
+<div class="timeline-marker"></div>
+</template>
+
+</div>
+<script src="js/loading.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/player.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/waveform.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/effects.js"></script>
+<script src="js/recorder.js"></script>
+<script src="js/ffmpeg.js"></script>
+<script src="js/export.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/shortcuts.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/project.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
