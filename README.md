@@ -113,8 +113,4 @@ SonicStudio is released under the MIT License - see `LICENSE` file for details.
 
 ## 📞 Support
 
-For assistance, contact support@sonicstudio.dev or visit our GitHub repository for issue tracking.
-
-## 🌟 Project Vision
-
-SonicStudio empowers creators with professional-grade editing tools that are accessible to everyone, regardless of technical expertise or financial resources. We believe that creativity should be free, open, and easy to use.
+F
