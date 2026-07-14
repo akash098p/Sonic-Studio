@@ -118,3 +118,7 @@ For assistance, contact support@sonicstudio.dev or visit our GitHub repository f
 ## 🌟 Project Vision
 
 SonicStudio empowers creators with professional-grade editing tools that are accessible to everyone, regardless of technical expertise or financial resources. We believe that creativity should be free, open, and easy to use.
+
+
+<img src="https://github-readme-stats-sigma-five.vercel.app/api/top-langs/?username=akash098p&layout=compact&langs_count=6&theme=tokyonight&hide_border=true" height="170"/>
+</p>
